@@ -32,11 +32,11 @@ executable hsec-render
     build-depends:    base >=4.14 && < 4.17,
                       commonmark ^>= 0.2.2,
                       text ^>= 1.2,
-                      time ^>= 1.9,
+                      time ^>= 1.9 || ^>= 1.10 || ^>= 1.11 || ^>= 1.12,
                       Cabal ^>= 3.6.3.0,
                       mtl ^>= 2.2,
                       unordered-containers,
                       containers ^>= 0.6,
-                      toml-reader ^>= 0.1
+                      toml-reader ^>= 0.1 || ^>= 0.2
     hs-source-dirs:   app
     default-language: Haskell2010
