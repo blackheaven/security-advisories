@@ -19,7 +19,7 @@ on:
 jobs:
   linux:
     name: Cabal build - Linux - ${{ matrix.compiler }}
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     timeout-minutes:
       60
     container:
@@ -53,7 +53,7 @@ jobs:
           curl -sL https://downloads.haskell.org/ghcup/0.1.17.3/x86_64-linux-ghcup-0.1.17.3 > "$HOME/.ghcup/bin/ghcup"
           chmod a+x "$HOME/.ghcup/bin/ghcup"
           "$HOME/.ghcup/bin/ghcup" install ghc "$HCVER"
-          "$HOME/.ghcup/bin/ghcup" install cabal 3.6.2.0
+          "$HOME/.ghcup/bin/ghcup" install cabal 3.8.1.0
         env:
           HCKIND: ${{ matrix.compilerKind }}
           HCNAME: ${{ matrix.compiler }}
