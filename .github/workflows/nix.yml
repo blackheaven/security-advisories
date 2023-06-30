@@ -35,7 +35,7 @@ jobs:
       - run: nix -L build
         working-directory: ./code/hsec-tools
       - run: mkdir -p ~/.local/bin
-      - run: mv code/hsec-tools/result/bin/hsec-tools ~/.local/bin
+      - run: cp code/hsec-tools/result/bin/hsec-tools ~/.local/bin
       - uses: actions/upload-artifact@v3
         if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
         with:
