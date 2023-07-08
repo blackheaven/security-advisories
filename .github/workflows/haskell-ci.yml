@@ -28,7 +28,7 @@ jobs:
         with:
           concurrent_skipping: "never"
           skip_after_successful_duplicate: "true"
-          paths: '["code/**"]'
+          pathhs_ignore: '["!code/**"]'
           do_not_skip: '["push", "workflow_dispatch", "schedule"]'
   linux:
     name: Haskell-CI - Linux - ${{ matrix.compiler }}
