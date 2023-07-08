@@ -25,11 +25,7 @@ jobs:
         with:
           key: ${{ inputs.artifact-name }}
           path: ~/.local/bin
-      - name: Check cache fetching
-        if: steps.download.outputs.cache-hit != 'true'
-        run: |
-          echo "Cannot fetch ${{ inputs.artifact-name }}"
-          exit 1
+          fail-on-cache-miss: true
       - run: chmod +x ~/.local/bin/hsec-tools
       - name: 'Setup jq'
         uses: dcarbone/install-jq-action@v1.0.1
