@@ -5,10 +5,6 @@ on:
       artifact-name:
         required: true
         type: string
-      changed-advisoriese:
-        required: false
-        type: string
-        default: '[]'
 jobs:
   check-advisories:
     runs-on: ubuntu-20.04
@@ -27,8 +23,6 @@ jobs:
           path: ~/.local/bin
       - run: chmod +x ~/.local/bin/hsec-tools
       - name: Run advisory syntax checks
-        env:
-          CHANGED_ADVISORIES: ${{ fromJSON(inputs.changed-advisories) }}
         run: |
           cd source
           RESULT=0
@@ -37,7 +31,7 @@ jobs:
           while read FILE ; do
             echo -n "$FILE: "
             hsec-tools check "$FILE" || RESULT=1
-          done < <([ ${#CHANGED_ADVISORIES[@]} -gt 0 ] && echo $CHANGED_ADVISORIES || find advisories EXAMPLE_README.md EXAMPLE_ADVISORY.md -type f -name "*.md")
+          done < <(find advisories EXAMPLE_README.md EXAMPLE_ADVISORY.md -type f -name "*.md")
           exit $RESULT
       - name: Run advisory uniqueness checks
         run: |
