@@ -26,10 +26,11 @@ jobs:
           name: ${{ inputs.artifact-name }}
           path: ~/.local/bin
       - run: chmod +x ~/.local/bin/hsec-tools
+      - name: 'Setup jq'
+        uses: dcarbone/install-jq-action@v1.0.1
       - name: Run advisory syntax checks
-        env:
-          CHANGED_ADVISORIES: ${{ fromJSON(inputs.changed-advisories) }}
         run: |
+          CHANGED_ADVISORIESarr=( $(echo "${{ inputs.changed-advisories }}" | jq -r '.[]') )
           cd source
           RESULT=0
           # Remove the begining of the README to extract the example.
