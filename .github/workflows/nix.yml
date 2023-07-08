@@ -16,7 +16,7 @@ jobs:
         with:
           concurrent_skipping: "never"
           skip_after_successful_duplicate: "true"
-          paths_ignore: '["!code/**"]'
+          paths: '["code/**"]'
           do_not_skip: '["push", "workflow_dispatch", "schedule"]'
   check_nix:
     name: Check nix build
@@ -36,8 +36,8 @@ jobs:
         working-directory: ./code/hsec-tools
       - run: mkdir -p ~/.local/bin
       - run: cp code/hsec-tools/result/bin/hsec-tools ~/.local/bin
-      - uses: actions/upload-artifact@v3
+      - uses: actions/cache/save@v3
         if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
         with:
-          name: hsec-tools-main
+          key: hsec-tools-main
           path: ~/.local/bin

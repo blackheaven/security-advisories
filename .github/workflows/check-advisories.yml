@@ -21,9 +21,9 @@ jobs:
           fetch-depth: 0
       - run: mkdir -p ~/.local/bin
       - id: download
-        uses: actions/download-artifact@v3
+        uses: actions/cache/restore@v3
         with:
-          name: ${{ inputs.artifact-name }}
+          key: ${{ inputs.artifact-name }}
           path: ~/.local/bin
       - run: chmod +x ~/.local/bin/hsec-tools
       - name: 'Setup jq'

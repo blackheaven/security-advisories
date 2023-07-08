@@ -245,10 +245,10 @@ jobs:
         run: |
           $CABAL v2-install $ARG_COMPILER --install-method=copy exe:hsec-tools
       - name: upload executable
-        uses: actions/upload-artifact@v3
+        uses: actions/cache/save@v3
         if: matrix.compiler == 'ghc-9.6.2'
         with:
-          name: hsec-tools-${{ github.sha }}
+          key: hsec-tools-${{ github.sha }}
           path: ~/.cabal/bin/hsec-tools
   check-advisories:
     name: Invoke check-advisories workflow
