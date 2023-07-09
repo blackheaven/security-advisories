@@ -250,7 +250,8 @@ jobs:
       - name: Prepare binary
         if: matrix.compiler == 'ghc-9.6.2'
         run: cp ~/.cabal/bin/hsec-tools ~/.local/bin
-      # - run: ls -l ~/.local/bin
+      - run: ls -l ~/.local/bin
+        if: matrix.compiler == 'ghc-9.6.2'
       - name: upload executable
         uses: actions/cache/save@v3
         if: matrix.compiler == 'ghc-9.6.2'
