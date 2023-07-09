@@ -41,6 +41,16 @@ jobs:
         run: |
           code_hash=$(git rev-parse HEAD:code)
           echo "code-hash=$code_hash" >> "$GITHUB_OUTPUT"
+  dbg:
+    name: Debug
+    needs: [tools_changed, advisories_changed, code_hash]
+    if: ${{ needs.tools_changed.outputs.should_skip == 'true' && needs.advisories_changed.outputs.should_skip != 'true' }}
+    runs-on: ubuntu-22.04
+    steps:
+      - run: |
+          echo "${{(needs.advisories_changed.outputs.changed_files) }}"
+          echo "${{ toJSON(needs.advisories_changed.outputs.changed_files) }}" | jq -r '.'
+          echo "${{ toJSON(needs.advisories_changed.outputs) }}" | jq -r '.'
   check_advisories:
     name: Invoke check-advisories workflow
     needs: [tools_changed, advisories_changed, code_hash]
