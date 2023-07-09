@@ -253,14 +253,15 @@ jobs:
       - run: ls -l ~/.local/bin
         if: matrix.compiler == 'ghc-9.6.2'
       - name: upload executable
-        uses: actions/cache/save@v3
+        uses: actions/upload-artifact@v3
         if: matrix.compiler == 'ghc-9.6.2'
         with:
-          key: hsec-tools-${{ github.sha }}
+          name: hsec-tools-${{ github.sha }}
           path: ~/.local/bin
   check-advisories:
     name: Invoke check-advisories workflow
     needs: linux
     uses: ./.github/workflows/check-advisories.yml
     with:
-      artifact-name: hsec-tools-${{ github.sha }}
+      fetch-key: hsec-tools-${{ github.sha }}
+      is-artifact: true

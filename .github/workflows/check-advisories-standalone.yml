@@ -33,7 +33,14 @@ jobs:
     name: Invoke check-advisories workflow
     needs: [tools_changed, advisories_changed]
     if: ${{ needs.tools_changed.outputs.should_skip == 'true' && needs.advisories_changed.outputs.should_skip != 'true' }}
-    uses: ./.github/workflows/check-advisories.yml
-    with:
-      artifact-name: hsec-tools-main
-      changed-advisories: ${{ toJSON(needs.advisories_changed.outputs.changed_files) }}
+    steps:
+      - id: code-hash
+        name: Compute code directory hash
+        run: |
+          code_hash=$(git rev-parse HEAD:code)
+          echo "code-hash=$code_hash" >> "$GITHUB_OUTPUT"
+      - uses: ./.github/workflows/check-advisories.yml
+        with:
+          fetch-key: hsec-tools-${{ steps.code-hash.outputs.code-hash}}
+          is-artifact: false
+          changed-advisories: ${{ toJSON(needs.advisories_changed.outputs.changed_files) }}

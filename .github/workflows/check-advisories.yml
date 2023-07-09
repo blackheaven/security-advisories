@@ -2,9 +2,12 @@ name: Check and publish security advisories
 on:
   workflow_call:
     inputs:
-      artifact-name:
+      fetch-key:
         required: true
         type: string
+      is-artifact:
+        required: true
+        type: boolean
       changed-advisories:
         required: false
         type: string
@@ -23,7 +26,7 @@ jobs:
       - id: download
         uses: actions/cache/restore@v3
         with:
-          key: ${{ inputs.artifact-name }}
+          key: ${{ inputs.fetch-key }}
           path: ~/.local/bin
           fail-on-cache-miss: true
       - run: chmod +x ~/.local/bin/hsec-tools
