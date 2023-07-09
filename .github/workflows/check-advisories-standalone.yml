@@ -35,6 +35,8 @@ jobs:
     runs-on: ubuntu-22.04
     if: ${{ needs.tools_changed.outputs.should_skip == 'true' && needs.advisories_changed.outputs.should_skip != 'true' }}
     steps:
+      - name: git checkout
+        uses: actions/checkout@v3
       - id: code-hash
         name: Compute code directory hash
         run: |
