@@ -41,22 +41,30 @@ jobs:
         run: |
           code_hash=$(git rev-parse HEAD:code)
           echo "code-hash=$code_hash" >> "$GITHUB_OUTPUT"
-  dbg:
+  changed_files:
     name: Debug
     needs: [tools_changed, advisories_changed, code_hash]
     if: ${{ needs.tools_changed.outputs.should_skip == 'true' && needs.advisories_changed.outputs.should_skip != 'true' }}
     runs-on: ubuntu-22.04
+    permissions:
+      pull-requests: read
+    outputs:
+      advisories: ${{ steps.changed-files.outputs.all_changed_files }}
     steps:
-      - run: |
-          echo "${{(needs.advisories_changed.outputs.changed_files) }}"
-          echo "${{ toJSON(needs.advisories_changed.outputs.changed_files) }}" | jq -r '.'
-          echo "${{ toJSON(needs.advisories_changed.outputs) }}" | jq -r '.'
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v37
+        with:
+          json: "true"
+
+      - name: List all changed files
+        run: echo "${{ steps.changed-files.outputs.all_changed_files }}"
   check_advisories:
     name: Invoke check-advisories workflow
-    needs: [tools_changed, advisories_changed, code_hash]
+    needs: [tools_changed, advisories_changed, code_hash, changed_files]
     if: ${{ needs.tools_changed.outputs.should_skip == 'true' && needs.advisories_changed.outputs.should_skip != 'true' }}
     uses: ./.github/workflows/check-advisories.yml
     with:
-      fetch-key: hsec-tools-${{ needs.code_hash.outputs.code_hash}}
+      fetch-key: hsec-tools-${{ needs.code_hash.outputs.code_hash }}
       is-artifact: false
-      changed-advisories: ${{ toJSON(needs.advisories_changed.outputs.changed_files) }}
+      changed-advisories: ${{ needs.changed_files.outputs.advisories }}
