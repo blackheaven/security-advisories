@@ -32,6 +32,7 @@ jobs:
   check-advisories:
     name: Invoke check-advisories workflow
     needs: [tools_changed, advisories_changed]
+    runs-on: ubuntu-22.04
     if: ${{ needs.tools_changed.outputs.should_skip == 'true' && needs.advisories_changed.outputs.should_skip != 'true' }}
     steps:
       - id: code-hash

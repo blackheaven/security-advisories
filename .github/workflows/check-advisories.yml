@@ -23,7 +23,15 @@ jobs:
           # `published` and `modified` timestamps
           fetch-depth: 0
       - run: mkdir -p ~/.local/bin
-      - id: download
+      - name: Fetch artifact
+        if: ${{ inputs.is-artifact }}
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.fetch-key }}
+          path: ~/.local/bin
+          fail-on-cache-miss: true
+      - name: Fetch cache
+        if: ${{ !inputs.is-artifact }}
         uses: actions/cache/restore@v3
         with:
           key: ${{ inputs.fetch-key }}
