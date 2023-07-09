@@ -38,7 +38,6 @@ jobs:
       - name: git checkout
         uses: actions/checkout@v3
       - id: code-hash
-        name: 
         run: |
           code_hash=$(git rev-parse HEAD:code)
           echo "code-hash=$code_hash" >> "$GITHUB_OUTPUT"
