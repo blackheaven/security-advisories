@@ -29,21 +29,25 @@ jobs:
           skip_after_successful_duplicate: "true"
           paths: '["advisories/**"]'
           do_not_skip: '["push", "workflow_dispatch", "schedule"]'
-  check-advisories:
-    name: Invoke check-advisories workflow
-    needs: [tools_changed, advisories_changed]
+  code_hash:
+    name: Compute code directory hash
     runs-on: ubuntu-22.04
-    if: ${{ needs.tools_changed.outputs.should_skip == 'true' && needs.advisories_changed.outputs.should_skip != 'true' }}
+    outputs:
+      - code_hash: ${{ steps.code-hash.outputs.code-hash }}
     steps:
       - name: git checkout
         uses: actions/checkout@v3
       - id: code-hash
-        name: Compute code directory hash
+        name: 
         run: |
           code_hash=$(git rev-parse HEAD:code)
           echo "code-hash=$code_hash" >> "$GITHUB_OUTPUT"
-      - uses: ./.github/workflows/check-advisories.yml
-        with:
-          fetch-key: hsec-tools-${{ steps.code-hash.outputs.code-hash}}
-          is-artifact: false
-          changed-advisories: ${{ toJSON(needs.advisories_changed.outputs.changed_files) }}
+  check_advisories:
+    name: Invoke check-advisories workflow
+    needs: [tools_changed, advisories_changed, code_hash]
+    if: ${{ needs.tools_changed.outputs.should_skip == 'true' && needs.advisories_changed.outputs.should_skip != 'true' }}
+    uses: ./.github/workflows/check-advisories.yml
+    with:
+      fetch-key: hsec-tools-${{ needs.code_hash.outputs.code_hash}}
+      is-artifact: false
+      changed-advisories: ${{ toJSON(needs.advisories_changed.outputs.changed_files) }}
