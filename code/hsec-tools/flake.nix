@@ -35,15 +35,22 @@
 
               copyToRoot = pkgs.buildEnv {
                 name = "image-root";
-                paths = [ (pkgs.haskell.lib.justStaticExecutables self.packages.${system}.hsec-tools) pkgs.git ];
+                paths = [ (pkgs.haskell.lib.justStaticExecutables self.packages.${system}.hsec-tools) pkgs.git.out pkgs.glibcLocales ];
                 pathsToLink = [ "/bin" ];
               };
               config = {
                 Cmd = [ "/bin/hsec-tools" ];
-                WorkDir = "/";
+                Env = [
+                  "LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive"
+                  "LC_TIME=en_US.UTF-8"
+                  "LANG=en_US.UTF-8"
+                  "LANGUAGE=en"
+                  "LC_ALL=en_US.UTF-8"
+                ];
                 Volumes = {
                   "/advisories" = { };
                 };
+                WorkDir = "/";
               };
             };
 
