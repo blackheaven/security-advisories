@@ -22,22 +22,22 @@ jobs:
           # We need to retrieve full history to determine the correct
           # `published` and `modified` timestamps
           fetch-depth: 0
-      - run: mkdir -p ~/.local/bin
+      - run: mkdir -p ~/.local/dockerImages
       - name: Fetch artifact
         if: ${{ inputs.is-artifact }}
         uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.fetch-key }}
-          path: ~/.local/bin
+          path: ~/.local/dockerImages
           fail-on-cache-miss: true
       - name: Fetch cache
         if: ${{ !inputs.is-artifact }}
         uses: actions/cache/restore@v3
         with:
           key: ${{ inputs.fetch-key }}
-          path: ~/.local/bin
+          path: ~/.local/dockerImages
           fail-on-cache-miss: true
-      - run: chmod +x ~/.local/bin/hsec-tools
+      - run: docker load -i ~/.local/dockerImages/hsec-tools
       - name: 'Setup jq'
         uses: dcarbone/install-jq-action@v1.0.1
       - name: Run advisory syntax checks
@@ -49,7 +49,7 @@ jobs:
           (echo '```toml'; sed -e '1,/```toml/d' README.md) > EXAMPLE_README.md
           while read FILE ; do
             echo -n "$FILE: "
-            hsec-tools check "$FILE" || RESULT=1
+            docker run --rm -v $PWD/advisories:/advisories haskell/hsec-tools:latest /bin/hsec-tools check "$FILE" || RESULT=1
           done < <([ ${#CHANGED_ADVISORIES[@]} -gt 0 ] && echo $CHANGED_ADVISORIES || find advisories EXAMPLE_README.md EXAMPLE_ADVISORY.md -type f -name "*.md")
           exit $RESULT
       - name: Run advisory uniqueness checks

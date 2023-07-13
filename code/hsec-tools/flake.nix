@@ -28,6 +28,24 @@
             haskellPackages.callCabal2nix "hsec-tools" ./. {
               # Dependency overrides go here
             };
+          packages.hsec-tools-image =
+            pkgs.dockerTools.buildImage {
+              name = "haskell/hsec-tools";
+              tag = "latest";
+
+              copyToRoot = pkgs.buildEnv {
+                name = "image-root";
+                paths = [ (pkgs.haskell.lib.justStaticExecutables self.packages.${system}.hsec-tools) pkgs.git ];
+                pathsToLink = [ "/bin" ];
+              };
+              config = {
+                Cmd = [ "/bin/hsec-tools" ];
+                WorkDir = "/";
+                Volumes = {
+                  "/advisories" = { };
+                };
+              };
+            };
 
           defaultPackage = packages.hsec-tools;
 
