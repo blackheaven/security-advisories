@@ -42,14 +42,14 @@ jobs:
         uses: dcarbone/install-jq-action@v1.0.1
       - name: Run advisory syntax checks
         run: |
-          CHANGED_ADVISORIESarr=( $(echo "${{ inputs.changed-advisories }}" | jq -r '.[]') )
+          CHANGED_ADVISORIES=( $(echo "${{ inputs.changed-advisories }}" | jq -r '.[]') )
           cd source
           RESULT=0
           # Remove the begining of the README to extract the example.
           (echo '```toml'; sed -e '1,/```toml/d' README.md) > EXAMPLE_README.md
           while read FILE ; do
             echo -n "$FILE: "
-            docker run --rm -v $PWD/advisories:/advisories haskell/hsec-tools:latest /bin/hsec-tools check "$FILE" || RESULT=1
+            docker run --rm -v $PWD:/advisories haskell/hsec-tools:latest /bin/hsec-tools check "advisories/$FILE" || RESULT=1
           done < <([ ${#CHANGED_ADVISORIES[@]} -gt 0 ] && echo $CHANGED_ADVISORIES || find advisories EXAMPLE_README.md EXAMPLE_ADVISORY.md -type f -name "*.md")
           exit $RESULT
       - name: Run advisory uniqueness checks
