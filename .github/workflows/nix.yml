@@ -59,7 +59,7 @@ jobs:
           path: ~/.local/dockerImages
   check-advisories:
     name: Invoke check-advisories workflow
-    if: ${{ needs.tools_changed.outputs.should_skip != 'true' && github.ref_name != 'main' }}
+    if: ${{ needs.tools_changed.outputs.should_skip != 'true' }}
     needs: check_nix
     uses: ./.github/workflows/check-advisories.yml
     with:
