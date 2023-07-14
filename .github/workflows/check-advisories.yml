@@ -29,7 +29,6 @@ jobs:
         with:
           name: ${{ inputs.fetch-key }}
           path: ~/.local/dockerImages
-          fail-on-cache-miss: true
       - name: Fetch cache
         if: ${{ !inputs.is-artifact }}
         uses: actions/cache/restore@v3
