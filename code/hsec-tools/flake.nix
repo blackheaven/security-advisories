@@ -21,6 +21,16 @@
                 Cabal-syntax = hsuper.Cabal-syntax_3_8_1_0;
               };
             };
+
+          gitconfig =
+            pkgs.writeTextFile {
+              name = ".gitconfig";
+              text = ''
+                [safe]
+                  directory = *
+              '';
+              destination = "/.gitconfig"; # should match 'config.WorkDir'
+            };
         in
         rec
         {
@@ -35,8 +45,12 @@
 
               copyToRoot = pkgs.buildEnv {
                 name = "image-root";
-                paths = [ (pkgs.haskell.lib.justStaticExecutables self.packages.${system}.hsec-tools) pkgs.git.out pkgs.glibcLocales ];
-                pathsToLink = [ "/bin" ];
+                paths = [
+                  (pkgs.haskell.lib.justStaticExecutables self.packages.${system}.hsec-tools)
+                  pkgs.git.out
+                  gitconfig
+                ];
+                pathsToLink = [ "/bin" "/" ];
               };
               config = {
                 Cmd = [ "/bin/hsec-tools" ];
@@ -46,6 +60,7 @@
                   "LANG=en_US.UTF-8"
                   "LANGUAGE=en"
                   "LC_ALL=en_US.UTF-8"
+                  "GIT_DISCOVERY_ACROSS_FILESYSTEM=1"
                 ];
                 Volumes = {
                   "/advisories" = { };
