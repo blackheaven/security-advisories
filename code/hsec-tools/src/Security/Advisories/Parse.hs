@@ -39,6 +39,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Lazy as T (toStrict)
 import Data.Time (LocalTime(..), ZonedTime(..), midnight, utc)
 import Distribution.Parsec (eitherParsec)
+import Distribution.Types.Version (Version)
 import Distribution.Types.VersionRange (VersionRange)
 
 import Commonmark.Html (Html, renderHtml)
@@ -227,8 +228,8 @@ parseAffected v = do
 parseAffectedVersionRange :: TOML.Value -> TableParser AffectedVersionRange
 parseAffectedVersionRange v = do
   tbl <- isTable v
-  introduced <- mandatory tbl "introduced" isString
-  fixed <- optional tbl "fixed" isString
+  introduced <- mandatory tbl "introduced" version
+  fixed <- optional tbl "fixed" version
   pure $ AffectedVersionRange introduced fixed
 
 advisoryDoc :: Blocks -> Either T.Text (T.Text, [Block])
@@ -315,6 +316,13 @@ architecture = \case
   "vax" -> pure VAX
   "x86_64" -> pure X86_64
   other -> throwError $ InvalidArchitecture other
+
+version :: TOML.Value -> TableParser Version
+version =
+  isString >=> \v ->
+    case eitherParsec (T.unpack v) of
+      Left err -> throwError $ UnderlyingParserError (T.pack err)
+      Right affected -> pure affected
 
 versionRange :: TOML.Value -> TableParser VersionRange
 versionRange =
